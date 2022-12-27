@@ -11,13 +11,13 @@
     },
     "autoload": {
         "psr-4": {
-            "Tomodo531\\FilterableFilter\\": "src/"
+            "Tomodo531\\FilterableFilters\\": "src/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Tomodo531\\FilterableFilter\\FilterServiceProvider"
+                "Tomodo531\\FilterableFilters\\FilterServiceProvider"
             ]
         }
     },
