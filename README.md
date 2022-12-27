@@ -2,6 +2,10 @@
 
 This package can create filters based on the columns in your database. It can also filter out unused options.
 
+```
+composer require tomodo531/filterable-filters
+```
+
 ![Filterable Filters](filterable-filter.png)
 
 ## Example:
