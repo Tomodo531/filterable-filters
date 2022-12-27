@@ -50,14 +50,14 @@ class FilterableFilters extends Filter
      * @param  mixed  $value
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function apply(NovaRequest $request, $query, $values)
+    public function apply(NovaRequest $request, $query, $value)
     {
-        foreach ($values as $key => $value) {
-            if (!empty($value)) {
+        foreach ($value as $key => $selectedValue) {
+            if (!empty($selectedValue)) {
                 if ( is_array($this->storedFields[$key])) {
                     $key = $this->storedFields[$key]['foreignkey'];
                 }
-                $query = $query->where($key, $value);
+                $query = $query->where($key, $selectedValue);
             }
         }
 
