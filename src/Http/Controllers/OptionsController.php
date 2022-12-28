@@ -47,7 +47,7 @@ class OptionsController
                             'value' => $col,
                             'label' => $col,
                         ];
-                }          
+                }
             });
         });
 
@@ -59,6 +59,8 @@ class OptionsController
                 'options' => array_unique($col, SORT_REGULAR)
             ];
         });
+
+        ray($options);
 
         return response()->json($options);
     }

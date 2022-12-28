@@ -2,9 +2,8 @@
 
 namespace Tomodo531\FilterableFilters;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
 use Laravel\Nova\Filters\Filter;
-use Laravel\Nova\Http\Requests\NovaRequest;
 
 class FilterableFilters extends Filter
 {
@@ -45,13 +44,14 @@ class FilterableFilters extends Filter
     /**
      * Apply the filter to the given query.
      *
-     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
+     * @param  \Illuminate\Http\Request  $request
      * @param  \Illuminate\Database\Eloquent\Builder  $query
      * @param  mixed  $value
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function apply(NovaRequest $request, $query, $value)
+    public function apply(Request $request, $query, $value)
     {
+        ray($value);
         foreach ($value as $key => $selectedValue) {
             if (!empty($selectedValue)) {
                 if ( is_array($this->storedFields[$key])) {
@@ -67,10 +67,10 @@ class FilterableFilters extends Filter
     /**
      * Get the filter's available options.
      *
-     * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
+     * @param  \Illuminate\Http\Request  $request
      * @return array
      */
-    public function options(NovaRequest $request)
+    public function options(Request $request)
     {
         return [];
     }

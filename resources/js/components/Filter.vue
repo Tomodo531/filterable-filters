@@ -1,33 +1,35 @@
 <template>
-    <FilterContainer>
-        <div class="grid gap-2">
-            <span>{{ filter.name }}</span>
-            <div v-for="($selector) in options">
-                {{ $selector.label }}
-                <SelectControl
-                    :dusk="`${filter.name}-select-filter`"
-                    label="label"
-                    class="w-full block"
-                    size="sm"
-                    v-model:selected="value[$selector.label]"
-                    @change="value[$selector.label] = $event"
-                    :options="$selector.options"
-                >
-                    <option value="" :selected="!value[$selector.label]">&mdash;</option>
-                </SelectControl>
-            </div>
-            <button class="shadow relative bg-primary-500 hover:bg-primary-400 text-white dark:text-gray-900 cursor-pointer rounded text-sm font-bold focus:outline-none focus:ring ring-primary-200 dark:ring-gray-600 inline-flex items-center justify-center h-9 px-3 shadow relative bg-primary-500 hover:bg-primary-400 text-white dark:text-gray-900 w-full" @click="getOptions()">filter options</button>
-            <button class="shadow relative bg-red-500 hover:bg-red-400 text-white cursor-pointer rounded text-sm font-bold focus:outline-none focus:ring ring-primary-200 dark:ring-gray-600 inline-flex items-center justify-center h-9 px-3 shadow relative bg-red-500 hover:bg-red-400 text-white w-full" @click="resetFilter()">reset</button>
+    <div>
+        <h3 class="text-sm uppercase tracking-wide text-80 bg-30 p-3">
+            {{ filter.name }}
+        </h3>
+
+        <p v-show="options.length <= 0" class="text-sm text-center uppercase text-80 font-bold pb-2">No available options</p>
+
+        <div v-for="(option) in options" class="p-2">
+            <p class="text-sm uppercase text-80 font-bold pb-2">{{ option.label }}</p>
+            <select
+                :dusk="filter.name + '-filter-select'"
+                class="block w-full form-control-sm form-select"
+                :value="value[option.label]"
+                @change="(event) => handleChange(event, option.label)"
+            >
+                <option value="" selected>&mdash;</option>
+
+                <option v-for="option in option.options" :value="option.value">
+                    {{ option.label }}
+                </option>
+            </select>
         </div>
-    </FilterContainer>
+        <div class="px-2">
+            <button class="btn btn-default btn-primary w-full mb-2" @click="getOptions()">filter options</button>
+            <button class="btn btn-default btn-danger w-full mb-2" @click="resetFilter()">reset</button>
+        </div>
+    </div>
 </template>
 
 <script>
-import debounce from "lodash/debounce";
-
 export default {
-    emits: ["change"],
-
     props: {
         resourceName: {
             type: String,
@@ -37,57 +39,37 @@ export default {
             type: String,
             required: true,
         },
-        lens: String,
     },
 
     data: () => ({
-        value: null,
-        debouncedHandleChange: null,
+        value: {},
         options: [],
     }),
 
     created() {
-        this.debouncedHandleChange = debounce(() => this.handleChange(), 500);
-
-        this.setCurrentFilterValue();
-    },
-
-    async mounted() {
-        Nova.$on("filter-reset", this.setCurrentFilterValue);
-        await this.getOptions()
-    },
-
-    beforeUnmount() {
-        Nova.$off("filter-reset", this.setCurrentFilterValue);
-    },
-
-    watch: {
-        value() {
-            this.debouncedHandleChange();
-        },
+        this.getOptions();
     },
 
     methods: {
-        setCurrentFilterValue() {
-            let currentValue = {};
-            this.options.map((option) => {
-                currentValue[option.label] = '';
-            });
-
-            this.value = currentValue;
-        },
-
-        handleChange() {
+        handleChange(event, label) {
+            console.log('hit')
             this.$store.commit(`${this.resourceName}/updateFilterState`, {
                 filterClass: this.filterKey,
-                value: this.value,
+                value: {...this.value, [label]: event.target.value},
             });
 
-            this.$emit("change");
+            this.value = {...this.value, [label]: event.target.value};
+
+            this.$emit('change');
         },
         resetFilter() {
-            this.value = [];
             this.getOptions();
+            this.$store.commit(`${this.resourceName}/updateFilterState`, {
+                filterClass: this.filterKey,
+                value: {},
+            });
+
+            this.value = {};
         },
         async getOptions() {
             let res = await Nova.request().post(`/nova-vendor/filterable-filters/options`, {
@@ -97,7 +79,7 @@ export default {
                 fields: this.filter.fields
             });
 
-            this.options = res.data;
+            this.options = JSON.parse(JSON.stringify(res.data));
         }
     },
 
@@ -105,8 +87,8 @@ export default {
         filter() {
             return this.$store.getters[`${this.resourceName}/getFilter`](
                 this.filterKey
-            );
+            )
         }
     },
-};
+}
 </script>

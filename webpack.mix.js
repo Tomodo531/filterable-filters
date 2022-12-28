@@ -1,10 +1,12 @@
 let mix = require('laravel-mix')
 
-require('./nova.mix')
-
 mix
   .setPublicPath('dist')
   .js('resources/js/filter.js', 'js')
-  .vue({ version: 3 })
-  .css('resources/css/filter.css', 'css')
-  .nova('tomodo531/filterable-filters')
+  .vue({ version: 2 })
+  .sass('resources/sass/filter.scss', 'css')
+  .webpackConfig({
+    externals: {
+      Vue: 'vue',
+    },
+  })

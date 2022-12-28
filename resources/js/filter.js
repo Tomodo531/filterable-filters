@@ -1,5 +1,3 @@
-import Filter from './components/Filter'
-
-Nova.booting((app, store) => {
-  app.component('filterable-filters', Filter)
+Nova.booting((Vue, router, store) => {
+  Vue.component('filterable-filters', require('./components/Filter').default)
 })
