@@ -51,7 +51,6 @@ class FilterableFilters extends Filter
      */
     public function apply(Request $request, $query, $value)
     {
-        ray($value);
         foreach ($value as $key => $selectedValue) {
             if (!empty($selectedValue)) {
                 if ( is_array($this->storedFields[$key])) {
